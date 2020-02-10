@@ -5,36 +5,53 @@
     <title>Generador de tablas de frecuencia</title>
     <link rel="stylesheet" href="index.css">
 </head>
+
 <script>
+    let n = 0;
+
     function onDataEntered(dataList, data) {
         const num = parseFloat(data);
-        if (data === 0 || data === "" || isNaN(num)) {
-            return;
-        }
+        if (data === 0 || data === "" || isNaN(num)) return;
         console.log(data);
         const newData = document.createElement("li");
         newData.textContent = data;
         dataList.appendChild(newData);
+        n++;
     }
 </script>
 <body>
-    <header id="banner">
-        <h1 className="Title">Tabla de Frecuencias</h1>
-        <h2 className="subTitle">Ingrese los datos:</h2>
-        <input id="data" placeholder="presione enter al terminar">
-    </header>
+
+<header id="banner">
+    <h1 class="Title">Tabla de Frecuencias</h1>
+    <h2 class="subTitle">Ingrese los datos:</h2>
+    <input id="data" placeholder="presione enter al terminar">
+    <button id="dataCompletaBtn">Dataset completo</button>
+</header>
+
 <ul id="dataList">
 
 </ul>
+<div id="reporteVariables">
+
+</div>
 <script>
     const data = document.getElementById("data");
     const dataList = document.getElementById("dataList");
-    data.addEventListener("keyup", function (event) {
+    data.addEventListener("keyup", (event) => {
         if (event.key === "Enter") {
             onDataEntered(dataList, data.value);
             data.value = "";
         }
     });
+    const reporteVariables = document.getElementById("reporteVariables");
+    const dataCompletaBtn = document.getElementById("dataCompletaBtn");
+    dataCompletaBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+        console.log(n);
+        const texto = document.createElement("p");
+        texto.textContent = "p=" + n;
+        reporteVariables.appendChild(texto);
+    }, false);
 </script>
 </body>
 </html>

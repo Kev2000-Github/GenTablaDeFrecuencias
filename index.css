@@ -1,15 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#banner {
+    width: 100%;
+    background: gray;
+    text-align: center;
+}
+
+#dataList {
+    width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
 #dataList li {
-    display: inline;
+    list-style: none;
     margin: 0 8px;
 }
 
-*{
-    margin:0;
-    padding:0;
-}
-
-#banner{
-    width:100%;
-    background:gray;
-    text-align: center;
+#data {
+    width: 200px;
 }
