@@ -4,26 +4,36 @@
     <meta charset="UTF-8">
     <title>Generador de tablas de frecuencia</title>
 </head>
+<style>
+    #dataList li {
+        display: inline;
+        margin: 0 8px;
+    }
+</style>
 <script>
-    function onDataEntered(dataList, number){
-        console.log(number);
-        dataList
+    function onDataEntered(dataList, data) {
+        const num = parseFloat(data);
+        if (data === 0 || data === "" || isNaN(num)) {
+            return;
+        }
+        console.log(data);
+        const newData = document.createElement("li");
+        newData.textContent = data;
+        dataList.appendChild(newData);
     }
 </script>
 <body>
-<input id="data">
+<input id="data" placeholder="Ingrese dato y presione enter">
+
 <ul id="dataList">
 
 </ul>
 <script>
     const data = document.getElementById("data");
     const dataList = document.getElementById("dataList");
-    data.addEventListener("keyup", function(event) {
+    data.addEventListener("keyup", function (event) {
         if (event.key === "Enter") {
             onDataEntered(dataList, data.value);
-            const newData = document.createElement("li");
-            newData.textContent = data.value;
-            dataList.appendChild(newData);
             data.value = "";
         }
     });
