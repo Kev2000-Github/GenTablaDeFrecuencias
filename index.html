@@ -107,6 +107,7 @@
 
         let ultimoLimiteInferior = vMin;
         let ultimoFi = 0;
+        let sumamifi = 0;
         for (let j = 0; j < nroCategorias; j++) {
             const limInf = ultimoLimiteInferior;
             const limSup = limInf + amplitud;
@@ -141,12 +142,16 @@
             fila.appendChild(mi);
 
             const mifi = document.createElement("th");
-            mifi.innerText = miValue * fiValue;
+            const mifiValue = miValue * fiValue;
+            sumamifi += mifiValue;
+            mifi.innerText = mifiValue;
             fila.appendChild(mifi);
             ultimoLimiteInferior = limSup;
 
             tablaDeFrecuencias.appendChild(fila)
         }
+        const media = sumamifi / n;
+        medidasTendenciaCentral.innerText = "media="+media;
 
     }, false);
 </script>
