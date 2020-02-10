@@ -3,24 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Generador de tablas de frecuencia</title>
+    <link rel="stylesheet" href="index.css">
 </head>
-<style>
-    #dataList {
-        width: 800px;
-        display: flex;
-        flex-wrap: wrap;
-    }
-    #dataList li {
-        list-style: none;
-        margin: 0 8px;
-    }
 
-    #data {
-        width: 200px;
-    }
-</style>
 <script>
     let n = 0;
+
     function onDataEntered(dataList, data) {
         const num = parseFloat(data);
         if (data === 0 || data === "" || isNaN(num)) return;
@@ -29,15 +17,17 @@
         newData.textContent = data;
         dataList.appendChild(newData);
         n++;
-    }/*
-    function onDatasetCompleto() {
-        console.log(n);
-        console.log('click');
-    }*/
+    }
 </script>
 <body>
-<input id="data" placeholder="Ingrese dato y presione enter">
-<button id="dataCompletaBtn">Dataset completo</button>
+
+<header id="banner">
+    <h1 class="Title">Tabla de Frecuencias</h1>
+    <h2 class="subTitle">Ingrese los datos:</h2>
+    <input id="data" placeholder="presione enter al terminar">
+    <button id="dataCompletaBtn">Dataset completo</button>
+</header>
+
 <ul id="dataList">
 
 </ul>
@@ -59,7 +49,7 @@
         event.preventDefault();
         console.log(n);
         const texto = document.createElement("p");
-        texto.textContent = "p="+n;
+        texto.textContent = "p=" + n;
         reporteVariables.appendChild(texto);
     }, false);
 </script>
