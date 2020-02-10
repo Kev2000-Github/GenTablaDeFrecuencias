@@ -177,20 +177,20 @@
         const linf = categoriaMedianal.limInf;
         const Faa = indexCatMedianal !== 0 ? datasetWithFrequencys[indexCatMedianal - 1].Fi : 0;
         const mediana = linf + amplitud * (n / 2 - Faa) / categoriaMedianal.fi;
-        let categoriasMaxFri = [];
+        let categoriasMaxfri = [];
         datasetWithFrequencys.forEach((data) => {
-            if (categoriasMaxFri.length === 0 || categoriasMaxFri[0].fri < data.fri) {
-                categoriasMaxFri = [];
-                categoriasMaxFri.push({fri: data.fri, mi: data.mi});
-            } else if (categoriasMaxFri[0].Fri === data.fri) {
-                categoriasMaxFri.push({fri: data.fri, mi: data.mi});
+            if (categoriasMaxfri.length === 0 || categoriasMaxfri[0].fri < data.fri) {
+                categoriasMaxfri = [];
+                categoriasMaxfri.push({fri: data.fri, mi: data.mi});
+            } else if (categoriasMaxfri[0].fri === data.fri) {
+                categoriasMaxfri.push({fri: data.fri, mi: data.mi});
             }
         });
         let tendenciaCentral = "media=" + media + " mediana=" + mediana;
-        if (categoriasMaxFri.length === 1) {
-            tendenciaCentral += " moda=" + categoriasMaxFri[0].mi;
+        if (categoriasMaxfri.length === 1) {
+            tendenciaCentral += " moda=" + categoriasMaxfri[0].mi;
         } else {
-            tendenciaCentral += categoriasMaxFri.map((catModal, index) => "M0" + index + "=" + catModal.mi).reduce(((previousValue, currentValue) => previousValue + currentValue));
+            tendenciaCentral += categoriasMaxfri.map((catModal, index) => " M0" + index + "=" + catModal.mi).reduce(((previousValue, currentValue) => previousValue + currentValue));
         }
         medidasTendenciaCentral.innerText = tendenciaCentral;
 
