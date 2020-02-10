@@ -88,7 +88,7 @@
     }, false);
 
     function getFrequencysForCategory(j, limInf, limSup, ultimoFi, n) {
-        const fi = dataset.filter((value) => value <= limSup && value >= limInf).length || 0;
+        const fi = dataset.filter((value) => value >= limInf && value < limSup).length || 0;
         const fri = fi / n;
         const Fi = ultimoFi + fi;
         const Fri = Fi / n;
@@ -172,11 +172,27 @@
         }
         const media = sumamifi / n;
         const indexCatMedianal = datasetWithFrequencys.findIndex((value) => value.Fri >= 0.5);
+        console.log("indexCatMedianal=", indexCatMedianal);
         const categoriaMedianal = datasetWithFrequencys[indexCatMedianal];
         const linf = categoriaMedianal.limInf;
-        const Faa = datasetWithFrequencys[indexCatMedianal - 1].Fi || datasetWithFrequencys[indexCatMedianal].Fi;
+        const Faa = indexCatMedianal !== 0 ? datasetWithFrequencys[indexCatMedianal - 1].Fi : 0;
         const mediana = linf + amplitud * (n / 2 - Faa) / categoriaMedianal.fi;
-        medidasTendenciaCentral.innerText = "media=" + media + " mediana=" + mediana;
+        let categoriasMaxFri = [];
+        datasetWithFrequencys.forEach((data) => {
+            if (categoriasMaxFri.length === 0 || categoriasMaxFri[0].fri < data.fri) {
+                categoriasMaxFri = [];
+                categoriasMaxFri.push({fri: data.fri, mi: data.mi});
+            } else if (categoriasMaxFri[0].Fri === data.fri) {
+                categoriasMaxFri.push({fri: data.fri, mi: data.mi});
+            }
+        });
+        let tendenciaCentral = "media=" + media + " mediana=" + mediana;
+        if (categoriasMaxFri.length === 1) {
+            tendenciaCentral += " moda=" + categoriasMaxFri[0].mi;
+        } else {
+            tendenciaCentral += categoriasMaxFri.map((catModal, index) => "M0" + index + "=" + catModal.mi).reduce(((previousValue, currentValue) => previousValue + currentValue));
+        }
+        medidasTendenciaCentral.innerText = tendenciaCentral;
 
     }, false);
 </script>
