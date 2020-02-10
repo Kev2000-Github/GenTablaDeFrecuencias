@@ -4,10 +4,17 @@
     <meta charset="UTF-8">
     <title>Generador de tablas de frecuencia</title>
     <link rel="stylesheet" href="index.css">
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+    </style>
 </head>
 
 <script>
-    let n = 0;
+    let dataset = [];
 
     function onDataEntered(dataList, data) {
         const num = parseFloat(data);
@@ -16,7 +23,7 @@
         const newData = document.createElement("li");
         newData.textContent = data;
         dataList.appendChild(newData);
-        n++;
+        dataset.push(num);
     }
 </script>
 <body>
@@ -25,13 +32,27 @@
     <h1 class="Title">Tabla de Frecuencias</h1>
     <h2 class="subTitle">Ingrese los datos:</h2>
     <input id="data" placeholder="presione enter al terminar">
-    <button id="dataCompletaBtn">Dataset completo</button>
+    <button id="dataCompletaBtn" class="bton">Dataset completo</button>
+    <button id="limpiarBtn">Limpiar</button>
 </header>
 
 <ul id="dataList">
 
 </ul>
 <div id="reporteVariables">
+</div>
+<table id="tablaDeFrecuencias">
+    <tr>
+        <th>Categoria</th>
+        <th>fi</th>
+        <th>fri</th>
+        <th>Fi</th>
+        <th>Fri</th>
+        <th>mi</th>
+        <th>mi*fi</th>
+    </tr>
+</table>
+<div id="medidasTendenciaCentral">
 
 </div>
 <script>
@@ -44,13 +65,89 @@
         }
     });
     const reporteVariables = document.getElementById("reporteVariables");
+    const tablaDeFrecuencias = document.getElementById("tablaDeFrecuencias");
     const dataCompletaBtn = document.getElementById("dataCompletaBtn");
-    dataCompletaBtn.addEventListener('click', function (event) {
+    const medidasTendenciaCentral = document.getElementById("medidasTendenciaCentral");
+    const limpiarBtn = document.getElementById("limpiarBtn");
+    limpiarBtn.addEventListener('click', (event) => {
+        dataset = [];
+        reporteVariables.innerText = "";
+        for (let child in tablaDeFrecuencias.children) {
+           // console.log("child="+child);
+        }
+        const length = tablaDeFrecuencias.children.length;
+        for (let i = 0 ; i < length ; i++) {
+            console.log(tablaDeFrecuencias.childNodes[i]);
+            if(tablaDeFrecuencias.childNodes[i].tagName === "TR"){
+                tablaDeFrecuencias.childNodes[i].remove();
+                i--;
+            }
+        }
+        dataList.innerText = "";
+    }, false);
+
+    dataCompletaBtn.addEventListener('click', (event) => {
         event.preventDefault();
-        console.log(n);
-        const texto = document.createElement("p");
-        texto.textContent = "p=" + n;
-        reporteVariables.appendChild(texto);
+        const reporte = document.createElement("p");
+        const n = dataset.length;
+        const nroCategorias = Math.round(1 + 3.33 * Math.log10(n));
+        let vMin = dataset[0];
+        let vMax = dataset[0];
+        dataset.forEach((num) => {
+            if (num < vMin)
+                vMin = num;
+            if (num > vMax)
+                vMax = num;
+        });
+        const rango = vMax - vMin;
+        const amplitud = Math.ceil(rango / nroCategorias);
+        const texto = "n=" + n + " k=" + nroCategorias + " rango=" + rango + " c=" + amplitud;
+        reporte.textContent = texto;
+        reporteVariables.appendChild(reporte);
+
+        let ultimoLimiteInferior = vMin;
+        let ultimoFi = 0;
+        for (let j = 0; j < nroCategorias; j++) {
+            const limInf = ultimoLimiteInferior;
+            const limSup = limInf + amplitud;
+
+            const fila = document.createElement("tr");
+
+            const intervalo = document.createElement("th");
+            intervalo.innerText = "[" + limInf + ", " + limSup + ")";
+            fila.appendChild(intervalo);
+
+            const fi = document.createElement("th");
+            const fiValue = dataset.filter((value) => value <= limSup && value >= limInf).length || 0;
+            fi.innerText = fiValue;
+            fila.appendChild(fi);
+
+            const fri = document.createElement("th");
+            fri.innerText = fiValue / n;
+            fila.appendChild(fri);
+
+            const Fi = document.createElement("th");
+            const FiValue = ultimoFi + fiValue;
+            Fi.innerText = FiValue;
+            fila.appendChild(Fi);
+
+            const Fri = document.createElement("th");
+            Fri.innerText = FiValue / n;
+            fila.appendChild(Fri);
+
+            const mi = document.createElement("th");
+            const miValue = (limInf + limSup) / 2;
+            mi.innerText = miValue;
+            fila.appendChild(mi);
+
+            const mifi = document.createElement("th");
+            mifi.innerText = miValue * fiValue;
+            fila.appendChild(mifi);
+            ultimoLimiteInferior = limSup;
+
+            tablaDeFrecuencias.appendChild(fila)
+        }
+
     }, false);
 </script>
 </body>
