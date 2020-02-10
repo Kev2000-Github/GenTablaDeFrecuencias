@@ -15,6 +15,7 @@
 
 <script>
     let dataset = [];
+    let datasetWithFrequencys = [];
 
     function onDataEntered(dataList, data) {
         const num = parseFloat(data);
@@ -31,8 +32,8 @@
 <header id="banner">
     <h1 class="Title">Tabla de Frecuencias</h1>
     <h2 class="subTitle">Ingrese los datos:</h2>
-    <input id="data" placeholder="presione enter al terminar">
-    <button id="dataCompletaBtn" class="bton">Dataset completo</button>
+    <input id="data" placeholder="ingrese dato y presione enter">
+    <button id="dataCompletaBtn" class="bton">Generar tabla de frecuencias</button>
     <button id="limpiarBtn">Limpiar</button>
 </header>
 
@@ -73,18 +74,30 @@
         dataset = [];
         reporteVariables.innerText = "";
         for (let child in tablaDeFrecuencias.children) {
-           // console.log("child="+child);
+            // console.log("child="+child);
         }
         const length = tablaDeFrecuencias.children.length;
-        for (let i = 0 ; i < length ; i++) {
+        for (let i = 0; i < length; i++) {
             console.log(tablaDeFrecuencias.childNodes[i]);
-            if(tablaDeFrecuencias.childNodes[i].tagName === "TR"){
+            if (tablaDeFrecuencias.childNodes[i].tagName === "TR") {
                 tablaDeFrecuencias.childNodes[i].remove();
                 i--;
             }
         }
         dataList.innerText = "";
     }, false);
+
+    function getFrequencysForCategory(j, limInf, limSup, ultimoFi, n) {
+        const fi = dataset.filter((value) => value <= limSup && value >= limInf).length || 0;
+        const fri = fi / n;
+        const Fi = ultimoFi + fi;
+        const Fri = Fi / n;
+        const mi = (limInf + limSup) / 2;
+        const mifi = mi * fi;
+        return {
+            limInf, limSup, fi, fri, Fi, Fri, mi, mifi
+        };
+    }
 
     dataCompletaBtn.addEventListener('click', (event) => {
         event.preventDefault();
@@ -111,6 +124,16 @@
         for (let j = 0; j < nroCategorias; j++) {
             const limInf = ultimoLimiteInferior;
             const limSup = limInf + amplitud;
+            const frequencysForCategory = getFrequencysForCategory(j, limInf, limSup, ultimoFi, n);
+            datasetWithFrequencys.push(frequencysForCategory);
+            ultimoFi = frequencysForCategory.Fi;
+            /*
+                        const fiValue = dataset.filter((value) => value <= limSup && value >= limInf).length || 0;
+                        const friValue = fiValue / n;
+                        const FiValue = ultimoFi + fiValue;
+                        const FriValue = FiValue / n;
+                        const miValue = (limInf + limSup) / 2;
+                        const mifiValue = miValue * fiValue;*/
 
             const fila = document.createElement("tr");
 
@@ -119,39 +142,41 @@
             fila.appendChild(intervalo);
 
             const fi = document.createElement("th");
-            const fiValue = dataset.filter((value) => value <= limSup && value >= limInf).length || 0;
-            fi.innerText = fiValue;
+            fi.innerText = frequencysForCategory.fi;
             fila.appendChild(fi);
 
             const fri = document.createElement("th");
-            fri.innerText = fiValue / n;
+            fri.innerText = frequencysForCategory.fri;
             fila.appendChild(fri);
 
             const Fi = document.createElement("th");
-            const FiValue = ultimoFi + fiValue;
-            Fi.innerText = FiValue;
+            Fi.innerText = frequencysForCategory.Fi;
             fila.appendChild(Fi);
 
             const Fri = document.createElement("th");
-            Fri.innerText = FiValue / n;
+            Fri.innerText = frequencysForCategory.Fri;
             fila.appendChild(Fri);
 
             const mi = document.createElement("th");
-            const miValue = (limInf + limSup) / 2;
-            mi.innerText = miValue;
+            mi.innerText = frequencysForCategory.mi;
             fila.appendChild(mi);
 
             const mifi = document.createElement("th");
-            const mifiValue = miValue * fiValue;
-            sumamifi += mifiValue;
-            mifi.innerText = mifiValue;
+            mifi.innerText = frequencysForCategory.mifi;
             fila.appendChild(mifi);
+
             ultimoLimiteInferior = limSup;
+            sumamifi += frequencysForCategory.mifi;
 
             tablaDeFrecuencias.appendChild(fila)
         }
         const media = sumamifi / n;
-        medidasTendenciaCentral.innerText = "media="+media;
+        const indexCatMedianal = datasetWithFrequencys.findIndex((value) => value.Fri >= 0.5);
+        const categoriaMedianal = datasetWithFrequencys[indexCatMedianal];
+        const linf = categoriaMedianal.limInf;
+        const Faa = datasetWithFrequencys[indexCatMedianal - 1].Fi || datasetWithFrequencys[indexCatMedianal].Fi;
+        const mediana = linf + amplitud * (n / 2 - Faa) / categoriaMedianal.fi;
+        medidasTendenciaCentral.innerText = "media=" + media + " mediana=" + mediana;
 
     }, false);
 </script>
