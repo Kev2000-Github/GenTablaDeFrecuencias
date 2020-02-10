@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de tablas de frecuencia</title>
+</head>
+<script>
+    function onDataEntered(dataList, number){
+        console.log(number);
+        dataList
+    }
+</script>
+<body>
+<input id="data">
+<ul id="dataList">
+
+</ul>
+<script>
+    const data = document.getElementById("data");
+    const dataList = document.getElementById("dataList");
+    data.addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            onDataEntered(dataList, data.value);
+            const newData = document.createElement("li");
+            newData.textContent = data.value;
+            dataList.appendChild(newData);
+            data.value = "";
+        }
+    });
+</script>
+</body>
+</html>
