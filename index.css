@@ -1,0 +1,15 @@
+#dataList li {
+    display: inline;
+    margin: 0 8px;
+}
+
+*{
+    margin:0;
+    padding:0;
+}
+
+#banner{
+    width:100%;
+    background:gray;
+    text-align: center;
+}
