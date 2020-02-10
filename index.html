@@ -14,7 +14,7 @@
 </head>
 
 <script>
-    const dataset = [];
+    let dataset = [];
 
     function onDataEntered(dataList, data) {
         const num = parseFloat(data);
@@ -33,6 +33,7 @@
     <h2 class="subTitle">Ingrese los datos:</h2>
     <input id="data" placeholder="presione enter al terminar">
     <button id="dataCompletaBtn">Dataset completo</button>
+    <button id="limpiarBtn">Limpiar</button>
 </header>
 
 <ul id="dataList">
@@ -51,6 +52,9 @@
         <th>mi*fi</th>
     </tr>
 </table>
+<div id="medidasTendenciaCentral">
+
+</div>
 <script>
     const data = document.getElementById("data");
     const dataList = document.getElementById("dataList");
@@ -63,7 +67,26 @@
     const reporteVariables = document.getElementById("reporteVariables");
     const tablaDeFrecuencias = document.getElementById("tablaDeFrecuencias");
     const dataCompletaBtn = document.getElementById("dataCompletaBtn");
-    dataCompletaBtn.addEventListener('click', function (event) {
+    const medidasTendenciaCentral = document.getElementById("medidasTendenciaCentral");
+    const limpiarBtn = document.getElementById("limpiarBtn");
+    limpiarBtn.addEventListener('click', (event) => {
+        dataset = [];
+        reporteVariables.innerText = "";
+        for (let child in tablaDeFrecuencias.children) {
+           // console.log("child="+child);
+        }
+        const length = tablaDeFrecuencias.children.length;
+        for (let i = 0 ; i < length ; i++) {
+            console.log(tablaDeFrecuencias.childNodes[i]);
+            if(tablaDeFrecuencias.childNodes[i].tagName === "TR"){
+                tablaDeFrecuencias.childNodes[i].remove();
+                i--;
+            }
+        }
+        dataList.innerText = "";
+    }, false);
+
+    dataCompletaBtn.addEventListener('click', (event) => {
         event.preventDefault();
         const reporte = document.createElement("p");
         const n = dataset.length;
