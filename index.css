@@ -17,11 +17,11 @@
 
 
 #banner {
-    width: 100%;
-    background: url("banner.jpg");
+    width: 97%;
+    background: url("https://i.ytimg.com/vi/8Fxl2p3AWj0/maxresdefault.jpg");
     text-align: center;
     padding: 10px;
-    margin: 0 0 20px 0;
+    margin: 5px 5px 20px 3px;
     border: 2px solid var(--bannerBorderColor);
     box-shadow: 1px 2px 3px var(--bannerShadowColor);
     font-family: 'Lemonada', cursive;
@@ -46,14 +46,18 @@
     font-size: 15px;
 }
 
+#dataCompletaBtn{
+    width: 200px;
+}
+
 .bton{
-        background: red;
+        background: #007E8B;
         color:white;
         font-size: 15px;
         width: 120px;
         height: 40px;
         cursor: pointer;
-        border: none;
+        border: 1px solid black;
         overflow:hidden;
         position:relative;
 }
@@ -87,4 +91,25 @@
 
 #dataList li {
     list-style: none;
-    margin: 0 8px;75
+    margin: 0 8px;
+}
+
+.reporte {
+    background: #C2CDFF;
+    padding: 10px;
+}
+.reporte:empty {
+    padding: 0;
+}
+.reporte span {
+    padding: 10px;
+}
+
+
+#tablaDeFrecuencias{
+    border-collapse : separate;
+    width: 100%;
+}
+tr:nth-child(even) {
+    background: #DEDDDD;
+}
