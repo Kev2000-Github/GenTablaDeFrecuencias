@@ -37,23 +37,12 @@
         <button id="limpiarBtn" class="bton">Limpiar</button>
     </div>
 </header>
-
-<ul id="dataList">
-
-</ul>
+<div id="dataListBlock">
+    <ul id="dataList"></ul>
+</div>
 <div id="reporteVariables">
 </div>
-<table id="tablaDeFrecuencias">
-    <tr>
-        <th>Categoria</th>
-        <th>fi</th>
-        <th>fri</th>
-        <th>Fi</th>
-        <th>Fri</th>
-        <th>mi</th>
-        <th>mi*fi</th>
-    </tr>
-</table>
+<table id="tablaDeFrecuencias"></table>
 <div id="medidasTendenciaCentral">
 
 </div>
@@ -80,84 +69,188 @@
     limpiarBtn.addEventListener('click', (event) => {
         dataset = [];
         reporteVariables.innerText = "";
-        for (let child in tablaDeFrecuencias.children) {
-           // console.log("child="+child);
+
+        while(tablaDeFrecuencias.firstChild){
+            tablaDeFrecuencias.removeChild(tablaDeFrecuencias.firstChild);
         }
-        const length = tablaDeFrecuencias.children.length;
-        for (let i = 0 ; i <=length ; i++) {
-            console.log(tablaDeFrecuencias.childNodes[length-i]);
-            if(tablaDeFrecuencias.childNodes[length-i].tagName === "TR"){
-                tablaDeFrecuencias.childNodes[length-i].remove();
-            }
-            else{
-                i+=2;
-            }
+        while(dataList.firstChild){
+            dataList.removeChild(dataList.firstChild);
         }
-        dataList.innerText = "";
     }, false);
 
     dataCompletaBtn.addEventListener('click', (event) => {
         event.preventDefault();
-        const reporte = document.createElement("p");
-        const n = dataset.length;
-        const nroCategorias = Math.round(1 + 3.33 * Math.log10(n));
-        let vMin = dataset[0];
-        let vMax = dataset[0];
-        dataset.forEach((num) => {
-            if (num < vMin)
-                vMin = num;
-            if (num > vMax)
-                vMax = num;
-        });
-        const rango = vMax - vMin;
-        const amplitud = Math.ceil(rango / nroCategorias);
-        const texto = "n=" + n + " k=" + nroCategorias + " rango=" + rango + " c=" + amplitud;
-        reporte.textContent = texto;
-        reporteVariables.appendChild(reporte);
+        //CREACIÓN DE LA TABLA
+        const fila = document.createElement("tr");
 
-        let ultimoLimiteInferior = vMin;
-        let ultimoFi = 0;
-        for (let j = 0; j < nroCategorias; j++) {
-            const limInf = ultimoLimiteInferior;
-            const limSup = limInf + amplitud;
+        const intervalo = document.createElement("th");
+        intervalo.innerText = "Intervalo"
+        fila.appendChild(intervalo);
 
-            const fila = document.createElement("tr");
+        const fi = document.createElement("th");
+        fi.innerText="fi";
+        fila.appendChild(fi);
 
-            const intervalo = document.createElement("th");
-            intervalo.innerText = "[" + limInf + ", " + limSup + ")";
-            fila.appendChild(intervalo);
+        const fri = document.createElement("th");
+        fri.innerText = "fri";
+        fila.appendChild(fri);
 
-            const fi = document.createElement("th");
-            const fiValue = dataset.filter((value) => value <= limSup && value >= limInf).length || 0;
-            fi.innerText = fiValue;
-            fila.appendChild(fi);
+        const Fi = document.createElement("th");
+        Fi.innerText = "Fi";
+        fila.appendChild(Fi);
 
-            const fri = document.createElement("th");
-            fri.innerText = fiValue / n;
-            fila.appendChild(fri);
+        const Fri = document.createElement("th");
+        Fri.innerText = "Fri"
+        fila.appendChild(Fri);
 
-            const Fi = document.createElement("th");
-            const FiValue = ultimoFi + fiValue;
-            Fi.innerText = FiValue;
-            fila.appendChild(Fi);
-
-            const Fri = document.createElement("th");
-            Fri.innerText = FiValue / n;
-            fila.appendChild(Fri);
-
-            const mi = document.createElement("th");
-            const miValue = (limInf + limSup) / 2;
-            mi.innerText = miValue;
-            fila.appendChild(mi);
-
-            const mifi = document.createElement("th");
-            mifi.innerText = miValue * fiValue;
-            fila.appendChild(mifi);
-            ultimoLimiteInferior = limSup;
-
-            tablaDeFrecuencias.appendChild(fila)
+        let metodo=1 
+        //POR CLASES
+        const length=dataList.children.length;
+        let categorias=new Array();
+        for(let i=0;i<length;i++){ //FILL ARRAYS WITH THE DATA
+            if(categorias.length>=0 && categorias.length<15){
+                let added=false;
+                categorias.forEach((objeto,index)=>{
+                    if(objeto.categoria==parseFloat(dataList.childNodes[i].innerText)){
+                        objeto.contador+=1;
+                        added=true;
+                    }
+                });
+                if(added===false){
+                    categorias.push({"categoria":parseFloat(dataList.childNodes[i].innerText),
+                                     "contador":1});
+                }
+            }
+            else{
+                categorias=[];
+                metodo=2;
+                break;
+            }
         }
+        //ORDENANDO EL ARREGLO
+        categorias.sort((a,b)=> parseFloat(a.categoria)-parseFloat(b.categoria));
 
+        if(metodo===1){//POR CLASES
+            const reporte = document.createElement("p");
+            const n = dataset.length;
+            const nroCategorias=categorias.length;
+            let vMin=categorias[0].categoria;
+            let vMax=categorias[0].categoria;
+            categorias.forEach((objeto) => {
+                if (objeto.categoria < vMin)
+                    vMin = objeto.categoria;
+                if (objeto.categoria > vMax)
+                    vMax = objeto.categoria;
+            });
+            const rango = vMax - vMin;
+            const texto = "n=" + n + " k=" + nroCategorias + " rango=" + rango;
+            reporte.textContent = texto;
+            reporteVariables.appendChild(reporte);
+            tablaDeFrecuencias.appendChild(fila);
+            const nroCategoriasClase=categorias.length;
+            let ultimoFi=0;
+            for (let j = 0; j < nroCategoriasClase; j++) {
+
+                    const fila = document.createElement("tr");
+
+                    const intervalo = document.createElement("th");
+                    intervalo.innerText = categorias[j].categoria;
+                    fila.appendChild(intervalo);
+
+                    const fi = document.createElement("th");
+                    const fiValue = categorias[j].contador;
+                    fi.innerText = fiValue;
+                    fila.appendChild(fi);
+
+                    const fri = document.createElement("th");
+                    fri.innerText = fiValue / n;
+                    fila.appendChild(fri);
+
+                    const Fi = document.createElement("th");
+                    const FiValue = ultimoFi + fiValue;
+                    ultimoFi=FiValue;
+                    Fi.innerText = FiValue;
+                    fila.appendChild(Fi);
+
+                    const Fri = document.createElement("th");
+                    Fri.innerText = FiValue / n;
+                    fila.appendChild(Fri);
+
+                    tablaDeFrecuencias.appendChild(fila)
+                }
+        }
+        else{//POR INTERVALOS
+        const mi = document.createElement("th");
+        const miValue = "mi";
+        mi.innerText=miValue;
+        fila.appendChild(mi);
+
+        const mifi = document.createElement("th");
+        mifi.innerText = "mifi";
+        fila.appendChild(mifi);
+
+        const reporte = document.createElement("p");
+                const n = dataset.length;
+                const nroCategorias = Math.round(1 + 3.33 * Math.log10(n));
+                let vMin = dataset[0];
+                let vMax = dataset[0];
+                dataset.forEach((num) => {
+                    if (num < vMin)
+                        vMin = num;
+                    if (num > vMax)
+                        vMax = num;
+                });
+                const rango = vMax - vMin;
+                const amplitud = Math.ceil(rango / nroCategorias);
+                const texto = "n=" + n + " k=" + nroCategorias + " rango=" + rango + " c=" + amplitud;
+                reporte.textContent = texto;
+                reporteVariables.appendChild(reporte);
+                tablaDeFrecuencias.appendChild(fila);
+
+                let ultimoLimiteInferior = vMin;
+                let ultimoFi = 0;
+                for (let j = 0; j < nroCategorias; j++) {
+                    const limInf = ultimoLimiteInferior;
+                    const limSup = limInf + amplitud;
+
+                    const fila = document.createElement("tr");
+
+                    const intervalo = document.createElement("th");
+                    intervalo.innerText = "[" + limInf + ", " + limSup + ")";
+                    fila.appendChild(intervalo);
+
+                    const fi = document.createElement("th");
+                    const fiValue = dataset.filter((value) => value <= limSup && value >= limInf).length || 0;
+                    fi.innerText = fiValue;
+                    fila.appendChild(fi);
+
+                    const fri = document.createElement("th");
+                    fri.innerText = fiValue / n;
+                    fila.appendChild(fri);
+
+                    const Fi = document.createElement("th");
+                    const FiValue = ultimoFi + fiValue;
+                    ultimoFi=Fivalue;
+                    Fi.innerText = FiValue;
+                    fila.appendChild(Fi);
+
+                    const Fri = document.createElement("th");
+                    Fri.innerText = FiValue / n;
+                    fila.appendChild(Fri);
+
+                    const mi = document.createElement("th");
+                    const miValue = (limInf + limSup) / 2;
+                    mi.innerText = miValue;
+                    fila.appendChild(mi);
+
+                    const mifi = document.createElement("th");
+                    mifi.innerText = miValue * fiValue;
+                    fila.appendChild(mifi);
+                    ultimoLimiteInferior = limSup;
+
+                    tablaDeFrecuencias.appendChild(fila)
+                }
+            }
     }, false);
 </script>
 </body>
