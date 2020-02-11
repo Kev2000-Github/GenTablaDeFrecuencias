@@ -94,13 +94,17 @@
     margin: 0 8px;
 }
 
-#reporteVariables{
+.reporte {
     background: #C2CDFF;
-    margin-left:10px;
     padding: 10px;
-    width: 240px;
-    left: 70px;
 }
+.reporte:empty {
+    padding: 0;
+}
+.reporte span {
+    padding: 10px;
+}
+
 
 #tablaDeFrecuencias{
     border-collapse : separate;
