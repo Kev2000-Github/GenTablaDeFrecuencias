@@ -5,7 +5,7 @@
     <title>Generador de tablas de frecuencia</title>
     <link rel="stylesheet" href="index.css">
     <link rel="icon" type="image/jpg"
-          href="https://4.bp.blogspot.com/_vctoM4Daupk/S9tYVENGDNI/AAAAAAAAAKg/JTZeZ1U4S-4/s1600/ROM7CA9RK2UGCAO97VKHCA8CPRT9CA1FO6YQCAYQS6ZBCAHQUIEZCA3AXLOVCA41DWGYCAIBV80ECATG7UFRCAAARX87CA74BOS4CAT8PZVGCAL4726XCAU16ZZPCAPO2335.jpg">
+          href="icon.jpg">
     <style>
         table {
             font-family: arial, sans-serif;
@@ -42,24 +42,11 @@
     </div>
 </header>
 
-<ul id="dataList">
-
-</ul>
+<ul id="dataList"></ul>
 
 <div id="reporteVariables" class="reporte"></div>
 
-<table id="tablaDeFrecuencias">
-    <tr id="fila">
-        <th>Categoria</th>
-        <th>fi</th>
-        <th>fri</th>
-
-        <th>Fi</th>
-        <th>Fri</th>
-        <th>mi</th>
-        <th>mi*fi</th>
-    </tr>
-</table>
+<table id="tablaDeFrecuencias"></table>
 
 <div id="medidasTendenciaCentral" class="reporte"></div>
 
@@ -85,16 +72,12 @@
     limpiarBtn.addEventListener('click', (event) => {
         dataset = [];
         reporteVariables.innerText = "";
-        const length = tablaDeFrecuencias.children.length;
-        for (let i = 0; i <= length; i++) {
-            console.log(tablaDeFrecuencias.childNodes[length - i]);
-            if (tablaDeFrecuencias.childNodes[length - i].tagName === "TR") {
-                tablaDeFrecuencias.childNodes[length - i].remove();
-            } else {
-                i += 2;
-            }
+        while(tablaDeFrecuencias.firstChild){
+            tablaDeFrecuencias.removeChild(tablaDeFrecuencias.firstChild);
         }
-        dataList.innerText = "";
+        while(dataList.firstChild){
+            dataList.removeChild(dataList.firstChild);
+        }
         medidasTendenciaCentral.innerText = "";
     }, false);
 
@@ -112,6 +95,174 @@
 
     dataCompletaBtn.addEventListener('click', (event) => {
         event.preventDefault();
+//CREACIÓN DE LA TABLA
+const fila = document.createElement("tr");
+
+const intervalo = document.createElement("th");
+intervalo.innerText = "Intervalo"
+fila.appendChild(intervalo);
+
+const fi = document.createElement("th");
+fi.innerText="fi";
+fila.appendChild(fi);
+
+const fri = document.createElement("th");
+fri.innerText = "fri";
+fila.appendChild(fri);
+
+const Fi = document.createElement("th");
+Fi.innerText = "Fi";
+fila.appendChild(Fi);
+
+const Fri = document.createElement("th");
+Fri.innerText = "Fri"
+fila.appendChild(Fri);
+
+let metodo=1 
+//POR CLASES
+const length=dataList.children.length;
+let categorias=new Array();
+for(let i=0;i<length;i++){ //FILL ARRAYS WITH THE DATA
+    if(categorias.length>=0 && categorias.length<15){
+        let added=false;
+        categorias.forEach((objeto,index)=>{
+            if(objeto.categoria==parseFloat(dataList.childNodes[i].innerText)){
+                objeto.contador+=1;
+                added=true;
+            }
+        });
+        if(added===false){
+            categorias.push({"categoria":parseFloat(dataList.childNodes[i].innerText),
+                             "contador":1});
+        }
+    }
+    else{
+        categorias=[];
+        metodo=2;
+        break;
+    }
+}
+//ORDENANDO EL ARREGLO
+categorias.sort((a,b)=> parseFloat(a.categoria)-parseFloat(b.categoria));
+if(metodo===1){//POR CLASES
+    const xfi = document.createElement("th");
+        xfi.innerText = "xfi";
+        fila.appendChild(xfi);
+        
+    const reporte = document.createElement("p");
+    const n = dataset.length;
+    const nroCategorias=categorias.length;
+    let vMin=categorias[0].categoria;
+    let vMax=categorias[0].categoria;
+    categorias.forEach((objeto) => {
+        if (objeto.categoria < vMin)
+            vMin = objeto.categoria;
+        if (objeto.categoria > vMax)
+            vMax = objeto.categoria;
+    });
+    const rango = vMax - vMin;
+    const texto = "n=" + nroCategorias + " rango=" + rango;
+    reporte.textContent = texto;
+    reporteVariables.appendChild(reporte);
+    tablaDeFrecuencias.appendChild(fila);
+    const nroCategoriasClase=categorias.length;
+    let ultimoFi=0;
+    let sumaxfi=0;
+    for (let j = 0; j < nroCategoriasClase; j++) {
+
+            const fila = document.createElement("tr");
+
+            const intervalo = document.createElement("th");
+            intervalo.innerText = categorias[j].categoria;
+            fila.appendChild(intervalo);
+
+            const fi = document.createElement("th");
+            const fiValue = categorias[j].contador;
+            fi.innerText = fiValue;
+            fila.appendChild(fi);
+
+            const fri = document.createElement("th");
+            fri.innerText = fiValue / n;
+            fila.appendChild(fri);
+
+            const Fi = document.createElement("th");
+            const FiValue = ultimoFi + fiValue;
+            ultimoFi=FiValue;
+            Fi.innerText = FiValue;
+            fila.appendChild(Fi);
+
+            const Fri = document.createElement("th");
+            Fri.innerText = FiValue / n;
+            fila.appendChild(Fri);
+
+            const xfi = document.createElement("th");
+            const xfiValue = categorias[j].categoria*categorias[j].contador;
+            xfi.innerText=xfiValue;
+            fila.appendChild(xfi);
+
+            sumaxfi+=xfiValue;
+            tablaDeFrecuencias.appendChild(fila)
+        }
+        const media = sumaxfi / n;
+        let mediana=0;
+        let medianaIndex=0;
+        if(categorias.length%2!=0){
+            medianaIndex=(categorias.length+1)/2-1;
+            mediana=categorias[medianaIndex].categoria;
+        }
+        else{
+            medianaIndex=parseInt((categorias.length+1)/2-1);
+            medianaIndex2=parseInt((categorias.length+1)/2);
+            mediana=parseFloat((categorias[medianaIndex].categoria+categorias[medianaIndex2].categoria)/2);
+        }
+        let categoriasMaxfri = [];
+        let modaContador=categorias[0].contador;
+        let moda=new Array();
+        let aux=0;
+        categorias.forEach(object => {
+            if(object.contador==modaContador){
+                moda.push(object.categoria);
+                aux++;
+            }
+            else if(object.contador>modaContador){
+                while(moda.length!=0){
+                    moda.pop();
+                }
+                moda.push(object.categoria);
+                modaContador=object.contador;
+                aux=0;
+            }
+        });
+        let tendenciaCentral = "media=" + media + " mediana=" + mediana;
+        moda.forEach(element => {
+            console.log("modas: "+element);
+        });
+        if(moda.length==categorias.length){
+            tendenciaCentral+= " No hay moda";
+        }
+        else if (aux==0) {
+            tendenciaCentral += " moda=" + moda[0];
+        }
+        else{
+            tendenciaCentral+=" moda= ";
+            moda.forEach((num,index) => {
+                tendenciaCentral+= "M0"+(index+1)+"= "+num+" ";
+            });
+        }
+        const tendenciaCentralSpan = document.createElement("span");
+        tendenciaCentralSpan.textContent = tendenciaCentral;
+        medidasTendenciaCentral.appendChild(tendenciaCentralSpan);
+    }
+    else{
+        const mi = document.createElement("th");
+        const miValue = "mi";
+        mi.innerText=miValue;
+        fila.appendChild(mi);
+
+        const mifi = document.createElement("th");
+        mifi.innerText = "mifi";
+        fila.appendChild(mifi);
+
         const reporte = document.createElement("span");
         const n = dataset.length;
         const nroCategorias = Math.round(1 + 3.33 * Math.log10(n));
@@ -128,6 +279,7 @@
         const texto = "n=" + n + " k=" + nroCategorias + " rango=" + rango + " c=" + amplitud;
         reporte.textContent = texto;
         reporteVariables.appendChild(reporte);
+        tablaDeFrecuencias.appendChild(fila);
 
         let ultimoLimiteInferior = vMin;
         let ultimoFi = 0;
@@ -198,7 +350,7 @@
         const tendenciaCentralSpan = document.createElement("span");
         tendenciaCentralSpan.textContent = tendenciaCentral;
         medidasTendenciaCentral.appendChild(tendenciaCentralSpan);
-
+    }
     }, false);
 </script>
 </body>
